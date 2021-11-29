@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+
+##
+# Requests cable modem parameters from the CMTS (uBR7246VXR)
+#
+# 1. The script first sends an SNMP request to the modem's IP address to get its MAC address.
+# 2. Converts the received MAC address to an OID and obtains the SNMP modem index by sending
+#    another SNMP request to the IP address of the CMTS.
+# 3. Sends the final SNMP request to the IP address of the CMTS based on the OID that was passed
+#    in the fourth parameter and the index obtained in the third step.
+# 4. Writes the parameter value to stdout
+#
+# The script was written for use with Zabbix as an external check.
+# (https://www.zabbix.com/documentation/5.0/ru/manual/config/items/itemtypes/external)
+#
+# Here is an example of how to run this script in order to get Upstream Signal-to-noise ratio,
+# where the modem IP address is 10.10.0.100, and the CMTS IP address is 10.10.0.1:
+# smts_modem_param public 10.10.0.100 10.10.0.1 1.3.6.1.2.1.10.127.1.3.3.1.13
+#
+# Requirements: installed bash, snmpget
+#
+# @author Aleksey A. <liuch@mail.ru>
+#
+# @param string SNMP community string
+# @param string Modem IP address
+# @param string SMTS IP address
+# @param string OID of the required parameter without the modem index
+#
+# @return string The parameter value as a string to stdout
+##
+
+COMMUNITY_STRING=$1
+MODEM_IP_ADDRESS=$2
+CMTS_IP_ADDRESS=$3
+SNMP_PARAM_OID=$4
+
+get_snmp_param() {
+	param=$(snmpget -v2c -r1 -Ov -c "$COMMUNITY_STRING" $1 $2 2>/dev/null)
+	echo ${param#*: }
+}
+
+# Getting the MAC address of the modem by its IP address
+mac0=$(get_snmp_param $MODEM_IP_ADDRESS iso.3.6.1.2.1.17.1.1.0)
+if [ "x$mac0" = "x" ]
+then
+	exit 1;
+fi
+
+# Inserting spaces
+mac0=${mac0//:/ }
+
+# Converting MAC address to OID
+i=0
+oid="1.3.6.1.2.1.10.127.1.3.7.1.2"
+for d in $mac0
+do
+	i=$((i+1))
+	if [ $i -gt 6 ]
+	then
+		exit 1
+	fi
+	oid="$oid.$((16#${d}))"
+done
+
+# Requesting the modem index value from the CMTS
+modem_index=$(get_snmp_param $CMTS_IP_ADDRESS $oid)
+if [ "x$modem_index" = "x" ]
+then
+	exit 1;
+fi
+
+# Requesting the parameter value
+param=$(get_snmp_param $CMTS_IP_ADDRESS $SNMP_PARAM_OID.$modem_index)
+if [ "x$param" = "x" ]
+then
+	exit 1;
+fi
+
+echo "$param"
+
+exit 0
+

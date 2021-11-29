@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>5.0</version>
+    <date>2021-03-16T21:16:50Z</date>
+    <groups>
+        <group>
+            <name>DOCSIS templates</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <template>docsis-settings</template>
+            <name>DOCSIS settings</name>
+            <description>Contains settings for DOCSIS templates and hosts</description>
+            <groups>
+                <group>
+                    <name>DOCSIS templates</name>
+                </group>
+            </groups>
+            <macros>
+                <macro>
+                    <macro>{$CMTS_ADDR}</macro>
+                    <value>10.0.100.1</value>
+                    <description>The IP address of the CMTS. This is necessary for checking Upstream SNR on the modems</description>
+                </macro>
+                <macro>
+                    <macro>{$CMTS_UPSTREAM_SN_MIN_VALUE}</macro>
+                    <value>20</value>
+                    <description>Minimal Upstream SNR on the CMTS</description>
+                </macro>
+                <macro>
+                    <macro>{$MODEM_DOWNSTREAM_POWER_MAX_VALUE}</macro>
+                    <value>15</value>
+                    <description>Maximal Downstream Power level on the modems</description>
+                </macro>
+                <macro>
+                    <macro>{$MODEM_DOWNSTREAM_POWER_MIN_VALUE}</macro>
+                    <value>-15</value>
+                    <description>Minimal Downstream Power level on the modems</description>
+                </macro>
+                <macro>
+                    <macro>{$MODEM_DOWNSTREAM_SN_CRITICAL_MIN_VALUE}</macro>
+                    <value>25</value>
+                    <description>Minimal critical Downstream SNR on the modems</description>
+                </macro>
+                <macro>
+                    <macro>{$MODEM_DOWNSTREAM_SN_MIN_VALUE}</macro>
+                    <value>30</value>
+                    <description>Minimal Downstream SNR on the modems</description>
+                </macro>
+                <macro>
+                    <macro>{$MODEM_UPSTREAM_POWER_MAX_VALUE}</macro>
+                    <value>53</value>
+                    <description>Maximal Upstream Power level on the modems</description>
+                </macro>
+                <macro>
+                    <macro>{$MODEM_UPSTREAM_POWER_MIN_VALUE}</macro>
+                    <value>30</value>
+                    <description>Minimal Upstream Power level on the modems</description>
+                </macro>
+                <macro>
+                    <macro>{$MODEM_UPSTREAM_SN_CRITICAL_MIN_VALUE}</macro>
+                    <value>20</value>
+                    <description>Minimal critical Upstream SNR on the modems</description>
+                </macro>
+                <macro>
+                    <macro>{$MODEM_UPSTREAM_SN_MIN_VALUE}</macro>
+                    <value>25</value>
+                    <description>Minimal Upstream SNR on the modems</description>
+                </macro>
+                <macro>
+                    <macro>{$SNMP_COMMUNITY}</macro>
+                    <value>public</value>
+                    <description>SNMP community string</description>
+                </macro>
+            </macros>
+        </template>
+    </templates>
+</zabbix_export>
